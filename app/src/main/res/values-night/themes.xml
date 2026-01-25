@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DanceTrainer" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">#D0BCFF</item>
+        
+        <!-- Fix: Removed self-referencing and redundant text color items that cause inflation crashes -->
+        <!-- Material3 handles these automatically. -->
+    </style>
+
+    <style name="Theme.DanceTrainer" parent="Base.Theme.DanceTrainer" />
+</resources>

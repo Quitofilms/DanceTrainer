@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pure_black">
+
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+            android:id="@+id/youtubePlayerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:enableAutomaticInitialization="false" />
+
+        <ImageView
+            android:id="@+id/ivPlaceholderThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnExternalLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/vivid_red"
+            android:text="WATCH ON YOUTUBE"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <View
+        android:id="@+id/resizeHandle"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/electric_blue"
+        app:layout_constraintTop_toBottomOf="@id/videoContainer" />
+
+    <ImageView
+        android:id="@+id/ivResizeIndicator"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/button_onoff_indicator_off"
+        android:rotation="90"
+        app:layout_constraintBottom_toBottomOf="@id/resizeHandle"
+        app:layout_constraintEnd_toEndOf="@id/resizeHandle"
+        app:layout_constraintStart_toStartOf="@id/resizeHandle"
+        app:layout_constraintTop_toTopOf="@id/resizeHandle"
+        app:tint="@color/white" />
+
+    <ScrollView
+        android:id="@+id/controlsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/resizeHandle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <TextView
+                android:id="@+id/tvYoutubeFallback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="VIDEO RESTRICTED - USE YOUTUBE"
+                android:textColor="@color/vivid_red"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <!-- Control Block Group Start -->
+            <LinearLayout
+                android:id="@+id/controlBlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+                    <CheckBox
+                        android:id="@+id/cbStar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/neon_green"
+                        android:button="@android:drawable/btn_star" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="FAVORITE MOVE"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="8dp"/>
+                    <Button
+                        android:id="@+id/btnDelete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/vivid_red"
+                        android:text="DELETE"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        app:cornerRadius="0dp" />
+                </LinearLayout>
+
+                <!-- Playback Controls -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button android:id="@+id/btnRewind" android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:text="-10S" android:backgroundTint="@color/white" android:textColor="@color/black" android:textSize="12sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                    <Button android:id="@+id/btnPlayPause" android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1.2" android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:text="PLAY/PAUSE" android:backgroundTint="@color/neon_green" android:textColor="@color/black" android:textSize="12sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                    <Button android:id="@+id/btnForward" android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:text="+10S" android:backgroundTint="@color/white" android:textColor="@color/black" android:textSize="12sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                </LinearLayout>
+
+                <!-- Speed Controls -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button android:id="@+id/btnSpeed025" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:text=".25X" android:backgroundTint="@color/electric_blue" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                    <Button android:id="@+id/btnSpeed050" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_marginStart="2dp" android:text=".50X" android:backgroundTint="@color/electric_blue" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                    <Button android:id="@+id/btnSpeed075" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_marginStart="2dp" android:text=".75X" android:backgroundTint="@color/electric_blue" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                    <Button android:id="@+id/btnSpeed100" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_marginStart="2dp" android:text="1X" android:backgroundTint="@color/electric_blue" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" app:cornerRadius="0dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button
+                        android:id="@+id/btnMirror"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:text="MIRROR"
+                        android:backgroundTint="@color/neon_green"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="0dp" />
+                    <Button
+                        android:id="@+id/btnFullscreen"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:text="FULL"
+                        android:backgroundTint="@color/neon_green"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="0dp" />
+                    <Button
+                        android:id="@+id/btnShare"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:text="SHARE"
+                        android:backgroundTint="@color/neon_green"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="0dp" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- Control Block Group End -->
+
+            <!-- Data Block -->
+            <EditText
+                android:id="@+id/etVideoTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="VIDEO TITLE"
+                android:background="@color/white"
+                android:padding="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="DANCE NOTES"
+                android:background="@color/white"
+                android:padding="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:gravity="top"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:lines="4" />
+
+            <!-- Footer Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/electric_blue"
+                    android:text="SAVE NOTE"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="0dp" />
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="12dp"
+                    android:background="@color/vivid_red"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <ImageButton
+        android:id="@+id/btnCloseFullscreen"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="16dp"
+        android:background="@color/vivid_red"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
