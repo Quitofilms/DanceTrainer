@@ -1,15 +1,16 @@
 package com.example.dancetrainer
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.TypedValue
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import kotlinx.coroutines.withContext
+import java.io.*
+import java.net.URL
+import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,14 +37,19 @@ class MainActivity : AppCompatActivity() {
     private val TEST_VIDEO_URL = "https://www.youtube.com/watch?v=atlkqWeTiok"
     private val baselineTags = listOf("lindy", "charleston", "swing", "jive", "shag", "collegiate shag", "style", "clothes", "music")
 
-    private val selectVideoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
-                action = Intent.ACTION_SEND
-                type = "video/*"
-                putExtra(Intent.EXTRA_STREAM, it)
+    private val selectVideosLauncher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+        if (!uris.isNullOrEmpty()) {
+            if (uris.size == 1) {
+                // If only one, proceed to single player as before
+                val intent = Intent(this, VideoPlayerActivity::class.java).apply {
+                    action = Intent.ACTION_SEND
+                    type = "video/*"
+                    putExtra(Intent.EXTRA_STREAM, uris[0])
+                }
+                startActivity(intent)
+            } else {
+                showBatchTagDialog(uris)
             }
-            startActivity(intent)
         }
     }
 
@@ -49,7 +58,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setupRecentVideosList()
-        handleIncomingFile(intent) // Check for shared .dance files
+        handleIncomingFile(intent) 
+        checkForUpdates()
 
         findViewById<ImageButton>(R.id.btnSettings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -61,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnAddLocalVideo).setOnClickListener {
-            selectVideoLauncher.launch("video/*")
+            selectVideosLauncher.launch("video/*")
         }
 
         findViewById<SearchView>(R.id.searchView).setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -71,6 +81,124 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+    }
+
+    private fun showBatchTagDialog(uris: List<Uri>) {
+        val input = EditText(this).apply {
+            hint = "e.g. #practice"
+            setPadding(50, 40, 50, 40)
+        }
+        
+        AlertDialog.Builder(this)
+            .setTitle("ADD BATCH TAG?")
+            .setMessage("Apply this tag to all ${uris.size} videos?")
+            .setView(input)
+            .setPositiveButton("IMPORT ALL") { _, _ ->
+                processBatchImport(uris, input.text.toString())
+            }
+            .setNegativeButton("CANCEL", null)
+            .show()
+    }
+
+    private fun processBatchImport(uris: List<Uri>, batchTag: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = AppDatabase.getDatabase(applicationContext)
+            
+            // Format tag for storage (remove # if present, extract words)
+            val tagText = if (batchTag.startsWith("#")) batchTag.substring(1) else batchTag
+            val cleanedTag = tagText.lowercase().trim()
+
+            uris.forEach { uri ->
+                try {
+                    // 1. Get original filename for title
+                    val fileName = getFileName(uri) ?: "Imported Video"
+                    
+                    // 2. Copy to internal storage
+                    val inputStream = contentResolver.openInputStream(uri)
+                    val internalFile = File(filesDir, "video_${System.currentTimeMillis()}_${(1..1000).random()}.mp4")
+                    val outputStream = FileOutputStream(internalFile)
+                    inputStream?.copyTo(outputStream)
+                    inputStream?.close()
+                    outputStream.close()
+
+                    // 3. Save to database
+                    db.danceVideoDao().insertVideo(DanceVideo(
+                        title = fileName,
+                        videoUrl = Uri.fromFile(internalFile).toString(),
+                        hashtags = cleanedTag,
+                        notes = if (cleanedTag.isNotEmpty()) "#$cleanedTag" else "",
+                        isStarred = false
+                    ))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                loadVideosFromDb()
+                Toast.makeText(this@MainActivity, "Batch Import Complete!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    @SuppressLint("Range")
+    private fun getFileName(uri: Uri): String? {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = contentResolver.query(uri, null, null, null, null)
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    val columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (columnIndex != -1) {
+                        result = cursor.getString(columnIndex)
+                    }
+                }
+            } finally {
+                cursor?.close()
+            }
+        }
+        if (result == null) {
+            result = uri.path
+            val cut = result?.lastIndexOf('/') ?: -1
+            if (cut != -1) {
+                result = result?.substring(cut + 1)
+            }
+        }
+        return result
+    }
+
+    private fun checkForUpdates() {
+        val versionUrl = "http://www.swingdancent.com/DanceTrainer/version.txt"
+        val apkUrl = "http://www.swingdancent.com/DanceTrainer/DanceTrainer.apk"
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val latestVersionStr = URL(versionUrl).readText().trim()
+                val latestVersionCode = latestVersionStr.toLong()
+                val currentVersionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageManager.getPackageInfo(packageName, 0).longVersionCode
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageManager.getPackageInfo(packageName, 0).versionCode.toLong()
+                }
+
+                if (latestVersionCode > currentVersionCode) {
+                    withContext(Dispatchers.Main) { showUpdateDialog(apkUrl) }
+                }
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun showUpdateDialog(apkUrl: String) {
+        AlertDialog.Builder(this)
+            .setTitle("UPDATE AVAILABLE")
+            .setMessage("A new version of Dance Trainer is ready. Download the latest APK?")
+            .setPositiveButton("DOWNLOAD") { _, _ ->
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl))
+                startActivity(intent)
+            }
+            .setNegativeButton("LATER", null)
+            .show()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -85,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                 contentResolver.openInputStream(uri)?.use { inputStream ->
                     val reader = BufferedReader(InputStreamReader(inputStream))
                     val data = reader.readLine() ?: return
-                    val parts = data.split("|") // Title|URL|Notes
+                    val parts = data.split("|")
                     if (parts.size >= 2) {
                         lifecycleScope.launch {
                             val db = AppDatabase.getDatabase(applicationContext)

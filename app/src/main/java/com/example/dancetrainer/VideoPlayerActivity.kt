@@ -60,6 +60,8 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var currentYoutubeTime: Float = 0f
     private var isYoutubePlaying: Boolean = false
 
+    private val DOWNLOAD_URL = "http://www.swingdancent.com/DanceTrainer/DanceTrainer.apk"
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -378,18 +380,20 @@ class VideoPlayerActivity : AppCompatActivity() {
         val url = currentVideoUrl ?: ""
         
         val shareBody = buildString {
-            append("Move: $title\n\n")
+            append("Check out this move: $title\n\n")
             if (url.startsWith("http")) {
-                append("Link: $url\n\n")
+                append("Video: $url\n\n")
             }
             if (notes.isNotEmpty()) {
-                append("Notes: $notes")
+                append("Notes: $notes\n\n")
             }
+            append("Practice this with me! Get the Dance Trainer app here:\n")
+            append(DOWNLOAD_URL)
         }
         
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Dance Trainer Move: $title")
+            putExtra(Intent.EXTRA_SUBJECT, "Dance Move: $title")
             putExtra(Intent.EXTRA_TEXT, shareBody)
         }
         startActivity(Intent.createChooser(shareIntent, "Share Move Using"))
