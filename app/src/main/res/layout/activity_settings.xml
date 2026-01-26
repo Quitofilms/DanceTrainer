@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/pure_black"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Appearance"
+        android:text="APPEARANCE"
+        android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,45 +27,119 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Notes Font Size" />
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="NOTES FONT SIZE" />
 
         <Button
             android:id="@+id/btnDecreaseFont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-" />
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/electric_blue"
+            android:text="-"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/btnIncreaseFont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+" />
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/electric_blue"
+            android:text="+"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="2dp"
+        android:background="@color/electric_blue" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Data Management"
+        android:text="DATA MANAGEMENT"
+        android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
+
+    <CheckBox
+        android:id="@+id/cbIncludeVideos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="INCLUDE LOCAL VIDEO FILES (OPT-IN)"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:buttonTint="@color/neon_green"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/btnExport"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_marginTop="8dp"
-        android:text="Export Data (JSON)" />
+        android:backgroundTint="@color/neon_green"
+        android:text="EXPORT BACKUP"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/btnImport"
         android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/neon_green"
+        android:text="IMPORT BACKUP"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/electric_blue" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Import Data (JSON)" />
+        android:layout_marginTop="16dp"
+        android:text="ABOUT"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvAppVersion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/neon_green"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="VERSION: 1.1 (Code: 2)" />
+
+    <Button
+        android:id="@+id/btnCheckUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/electric_blue"
+        android:text="CHECK FOR UPDATES"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:text="To prompt updates, create a 'version.txt' on your server containing only the next Version Code number (e.g., 3)." />
 
 </LinearLayout>
