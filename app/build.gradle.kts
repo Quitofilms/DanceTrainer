@@ -52,10 +52,10 @@ tasks.register<Copy>("publishApk") {
     from(layout.buildDirectory.file("outputs/apk/release/app-release-unsigned.apk")) 
     
     // 2. Where you want it to go (Using forward slashes for stability)
-    into("Y:/DanceTrainer")
+    into("Y:/apps/DanceTrainer")
     
-    // 3. Rename it to match your version.txt expectations
-    rename { "DanceTrainer.apk" }
+    // 3. Rename it
+    rename { "dancetrainer.apk" }
 
     // Ensure it only runs after the build is actually done
     dependsOn("assembleRelease")
@@ -66,7 +66,7 @@ tasks.register("publishVersion") {
     group = "publishing"
     description = "Updates the version.txt on the server."
     doLast {
-        val versionFile = file("Y:/DanceTrainer/version.txt")
+        val versionFile = file("Y:/apps/DanceTrainer/version.txt")
         versionFile.writeText(android.defaultConfig.versionCode.toString())
         println("Successfully updated server version to: ${android.defaultConfig.versionCode}")
     }

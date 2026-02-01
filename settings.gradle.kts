@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Dance Trainer"
+rootProject.name = "Dance Trainer - Original"
 include(":app")
- 
